@@ -1,0 +1,11 @@
+Customer Insurance, meet prediction.
+
+I built a machine-learning pipeline that predicts who will buy insurance — from just two inputs: age and estimated salary.
+
+I benchmarked five classifiers on a 100-record held-out test set. K-Nearest Neighbors won: 93% accuracy, 89% precision, 92% recall.
+
+Built with Python, scikit-learn, Pandas and Matplotlib during a 15-week AI/ML internship at IntrnForte Technologies.
+
+Insurers spend fortunes guessing who converts. This reads the pattern instead.
+
+#MachineLearning #Python #DataScience #scikitlearn #AI #InsuranceAnalytics

@@ -1,5 +1,9 @@
 # Customer Insurance Purchase Prediction System
 
+<p align="center">
+  <video src="brag-output/brag.mp4" poster="brag-output/brag.jpg" width="720" controls muted></video>
+</p>
+
 Built during a 15-week AI/ML internship at **IntrnForte Technologies Pvt. Ltd.** to identify which customers are most likely to purchase insurance, based on a real-world demographic dataset (Age, Estimated Salary).
 
 ## Overview

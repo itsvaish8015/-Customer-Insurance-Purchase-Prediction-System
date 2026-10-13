@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Customer Insurance Purchase Prediction — Launch Brag</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #05070f;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        color: #f2f5fb;
+      }
+      .bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(1300px 760px at 50% 40%, #14224a 0%, #0a1128 55%, #05070f 100%);
+      }
+      .grid {
+        position: absolute;
+        inset: -2px;
+        background-image:
+          linear-gradient(to right, rgba(79, 140, 255, 0.09) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(79, 140, 255, 0.09) 1px, transparent 1px);
+        background-size: 80px 80px;
+        mask-image: radial-gradient(1200px 720px at 50% 45%, #000 30%, transparent 80%);
+        -webkit-mask-image: radial-gradient(1200px 720px at 50% 45%, #000 30%, transparent 80%);
+      }
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .dot {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #4f8cff;
+        box-shadow: 0 0 14px rgba(79, 140, 255, 0.8);
+      }
+      .dot.w { background: #ff6b6b; box-shadow: 0 0 14px rgba(255, 107, 107, 0.8); }
+
+      .hook-line {
+        font-size: 128px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.04;
+        text-transform: uppercase;
+      }
+      .accent { color: #4f8cff; text-shadow: 0 0 40px rgba(79, 140, 255, 0.45); }
+      .warm { color: #ff6b6b; text-shadow: 0 0 40px rgba(255, 107, 107, 0.4); }
+
+      .badge {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: #9dc0ff;
+        border: 1px solid rgba(79, 140, 255, 0.5);
+        border-radius: 999px;
+        padding: 14px 30px;
+        margin-bottom: 40px;
+      }
+      .reveal-title {
+        font-size: 112px;
+        font-weight: 900;
+        line-height: 1.0;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+        max-width: 1500px;
+      }
+      .reveal-title span { display: block; }
+      .reveal-title span:nth-child(2) { color: #4f8cff; }
+      .sub { margin-top: 34px; font-size: 36px; color: #aebbd2; }
+      .uline {
+        margin-top: 34px;
+        width: 360px;
+        height: 5px;
+        background: linear-gradient(90deg, #4f8cff, #ff6b6b);
+        transform-origin: left center;
+      }
+
+      .eyebrow {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: #4f8cff;
+        margin-bottom: 48px;
+      }
+      .caption { margin-top: 52px; font-size: 34px; color: #aebbd2; max-width: 1300px; }
+
+      /* leaderboard */
+      .board { width: 1280px; }
+      .row { display: flex; align-items: center; gap: 26px; margin-bottom: 22px; }
+      .row .name { width: 430px; text-align: right; font-size: 30px; font-weight: 600; color: #dbe4f5; }
+      .track { flex: 1; height: 30px; background: rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; }
+      .fill { height: 100%; border-radius: 8px; background: #2f66d6; transform-origin: left center; }
+      .row .val { width: 120px; text-align: left; font-size: 30px; font-weight: 800; color: #dbe4f5; }
+      .row.best .name { color: #ffffff; }
+      .row.best .fill { background: linear-gradient(90deg, #4f8cff, #ff6b6b); box-shadow: 0 0 26px rgba(79, 140, 255, 0.6); }
+      .row.best .val { color: #ff8f6b; }
+
+      /* stat */
+      .stat { display: flex; align-items: baseline; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+      .stat #num { font-size: 320px; }
+      .stat .pct { font-size: 160px; color: #4f8cff; margin-left: 8px; }
+      .statlabel {
+        margin-top: 4px;
+        font-size: 52px;
+        font-weight: 600;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: #9dc0ff;
+      }
+
+      /* scatter card */
+      .card {
+        width: 1220px;
+        background: #0e1426;
+        border: 1px solid rgba(79, 140, 255, 0.22);
+        border-radius: 24px;
+        padding: 26px 34px 18px;
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+      }
+      .card h4 { font-size: 24px; font-weight: 700; color: #cfe0ff; text-align: left; margin-bottom: 6px; }
+      .card svg { width: 100%; height: 430px; display: block; }
+      .axis { stroke: #4a5a7a; stroke-width: 2; }
+      .tick { stroke: #29344d; stroke-width: 1; }
+      .alabel { fill: #9fb0cc; font-size: 22px; font-family: Inter, system-ui, sans-serif; }
+      .pt { opacity: 1; }
+      .boundary { stroke: #ff6b6b; stroke-width: 3; stroke-dasharray: 900; stroke-dashoffset: 900; }
+      .legend { display: flex; gap: 40px; justify-content: center; margin-top: 6px; font-size: 24px; color: #c3cfe4; }
+      .legend i { display: inline-block; width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; vertical-align: -2px; }
+      .legend .b i { background: #4f8cff; }
+      .legend .g i { background: #7d8bab; }
+
+      .outro-title {
+        font-size: 108px;
+        font-weight: 900;
+        line-height: 1.0;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+      .outro-title span { display: block; }
+      .outro-title span:nth-child(2) { color: #4f8cff; }
+      .outro-tag { margin-top: 30px; font-size: 40px; color: #cfe0f2; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="20.5" data-width="1920" data-height="1080">
+      <div class="bg"><div class="grid"></div></div>
+
+      <!-- Scene 1 — Hook -->
+      <section class="scene clip" id="s1" data-start="0" data-duration="3.5" data-track-index="1">
+        <div class="inner" id="s1-inner">
+          <div class="dot" id="d1" style="top: 190px; left: 260px"></div>
+          <div class="dot w" id="d2" style="top: 250px; left: 1500px"></div>
+          <div class="dot" id="d3" style="top: 300px; left: 640px"></div>
+          <div class="dot w" id="d4" style="top: 780px; left: 1180px"></div>
+          <div class="dot" id="d5" style="top: 850px; left: 520px"></div>
+          <div class="dot w" id="d6" style="top: 900px; left: 1500px"></div>
+          <div class="hook-line" id="hook1">Some customers buy.</div>
+          <div class="hook-line" id="hook2"><span class="accent">The data</span> knows which.</div>
+        </div>
+      </section>
+
+      <!-- Scene 2 — Reveal -->
+      <section class="scene clip" id="s2" data-start="3.5" data-duration="3.5" data-track-index="2">
+        <div class="inner" id="s2-inner">
+          <div class="badge" id="s2badge">AI / ML Internship Project</div>
+          <h1 class="reveal-title">
+            <span id="s2t1">Customer Insurance</span>
+            <span id="s2t2">Purchase Prediction</span>
+          </h1>
+          <div class="sub" id="s2sub">Five classifiers. A 100-record test set. One clear winner.</div>
+          <div class="uline" id="s2line"></div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — Leaderboard -->
+      <section class="scene clip" id="s3" data-start="7" data-duration="3.5" data-track-index="3">
+        <div class="inner" id="s3-inner">
+          <div class="eyebrow" id="s3eyebrow">Five Classifiers, Benchmarked</div>
+          <div class="board">
+            <div class="row" id="r1"><span class="name">Decision Tree</span><span class="track"><span class="fill" id="f1" style="width: 22%"></span></span><span class="val">84%</span></div>
+            <div class="row" id="r2"><span class="name">Support Vector Machine</span><span class="track"><span class="fill" id="f2" style="width: 42%"></span></span><span class="val">86%</span></div>
+            <div class="row" id="r3"><span class="name">Logistic Regression</span><span class="track"><span class="fill" id="f3" style="width: 60%"></span></span><span class="val">88%</span></div>
+            <div class="row" id="r4"><span class="name">Random Forest</span><span class="track"><span class="fill" id="f4" style="width: 70%"></span></span><span class="val">89%</span></div>
+            <div class="row best" id="r5"><span class="name">K-Nearest Neighbors</span><span class="track"><span class="fill" id="f5" style="width: 100%"></span></span><span class="val">93%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — KNN hero -->
+      <section class="scene clip" id="s4" data-start="10.5" data-duration="3.5" data-track-index="4">
+        <div class="inner" id="s4-inner">
+          <div class="eyebrow" id="s4eyebrow">Best Model — K-Nearest Neighbors</div>
+          <div class="stat"><span id="num">0</span><span class="pct">%</span></div>
+          <div class="statlabel" id="s4label">accuracy</div>
+          <div class="caption" id="s4sub">89% precision · 92% recall on the positive class.</div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — Scatter plot -->
+      <section class="scene clip" id="s5" data-start="14" data-duration="3.4" data-track-index="5">
+        <div class="inner" id="s5-inner">
+          <div class="eyebrow" id="s5eyebrow">Age × Estimated Salary</div>
+          <div class="card" id="card">
+            <h4>Age vs Estimated Salary for Insurance Purchases</h4>
+            <svg viewBox="0 0 1220 430" aria-label="Scatter plot of age versus estimated salary colored by purchase outcome">
+              <line class="tick" x1="70" y1="376" x2="1180" y2="376" />
+              <line class="tick" x1="70" y1="292" x2="1180" y2="292" />
+              <line class="tick" x1="70" y1="208" x2="1180" y2="208" />
+              <line class="tick" x1="70" y1="124" x2="1180" y2="124" />
+              <line class="tick" x1="70" y1="40" x2="1180" y2="40" />
+              <line class="axis" x1="70" y1="40" x2="70" y2="380" />
+              <line class="axis" x1="70" y1="380" x2="1180" y2="380" />
+              <text class="alabel" x="600" y="424">Age</text>
+              <text class="alabel" x="24" y="230" transform="rotate(-90 24 230)">Estimated Salary</text>
+              <g id="pts-grey">
+                <circle class="pt" cx="140" cy="350" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="185" cy="322" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="160" cy="292" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="225" cy="360" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="250" cy="330" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="205" cy="250" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="300" cy="352" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="330" cy="300" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="285" cy="270" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="120" cy="236" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="380" cy="330" r="9" fill="#7d8bab" />
+                <circle class="pt" cx="180" cy="198" r="9" fill="#7d8bab" />
+              </g>
+              <g id="pts-blue">
+                <circle class="pt" cx="720" cy="150" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="800" cy="110" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="900" cy="170" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="850" cy="120" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="760" cy="200" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="960" cy="140" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="1010" cy="200" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="1080" cy="170" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="880" cy="250" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="990" cy="260" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="940" cy="200" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="820" cy="270" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="1100" cy="300" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="700" cy="250" r="9" fill="#4f8cff" />
+                <circle class="pt" cx="1140" cy="230" r="9" fill="#4f8cff" />
+              </g>
+              <line class="boundary" id="boundary" x1="470" y1="400" x2="690" y2="20" />
+            </svg>
+            <div class="legend"><span class="b"><i></i>Purchased</span><span class="g"><i></i>Not purchased</span></div>
+          </div>
+          <div class="caption" id="s5cap">Purchase outcome, plotted and separated.</div>
+        </div>
+      </section>
+
+      <!-- Scene 6 — Outro -->
+      <section class="scene clip" id="s6" data-start="17.4" data-duration="3.1" data-track-index="6">
+        <div class="inner" id="s6-inner">
+          <div class="outro-title">
+            <span id="s6t1">Customer Insurance</span>
+            <span id="s6t2">Prediction</span>
+          </div>
+          <div class="outro-tag" id="s6tag">Predict the buyer before the pitch.</div>
+          <div class="uline" id="s6line"></div>
+        </div>
+      </section>
+
+      <audio id="music" data-start="0" data-duration="20.5" data-track-index="20" data-volume="1"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"></audio>
+      <audio id="sfx-1" data-start="0.15" data-duration="0.12" data-track-index="21" data-volume="0.7"
+        src="assets/sfx/impact/impactSoft_medium_000.ogg"></audio>
+      <audio id="sfx-2" data-start="3.7" data-duration="1.2" data-track-index="22" data-volume="0.65"
+        src="assets/sfx/impact/impactBell_heavy_000.ogg"></audio>
+      <audio id="sfx-3" data-start="7.62" data-duration="0.11" data-track-index="23" data-volume="0.55"
+        src="assets/sfx/interface/drop_001.ogg"></audio>
+      <audio id="sfx-4" data-start="8.72" data-duration="0.19" data-track-index="24" data-volume="0.6"
+        src="assets/sfx/interface/drop_002.ogg"></audio>
+      <audio id="sfx-5" data-start="9.27" data-duration="0.19" data-track-index="25" data-volume="0.7"
+        src="assets/sfx/interface/drop_003.ogg"></audio>
+      <audio id="sfx-6" data-start="10.9" data-duration="0.12" data-track-index="26" data-volume="0.65"
+        src="assets/sfx/impact/impactMetal_medium_002.ogg"></audio>
+      <audio id="sfx-7" data-start="14.7" data-duration="0.19" data-track-index="27" data-volume="0.65"
+        src="assets/sfx/impact/impactSoft_medium_001.ogg"></audio>
+      <audio id="sfx-8" data-start="17.45" data-duration="0.30" data-track-index="28" data-volume="0.7"
+        src="assets/sfx/impact/impactBell_heavy_004.ogg"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      /* Scene 1 — hook */
+      tl.fromTo("#music", { volume: 0 }, { volume: 0.35, duration: 0.8, ease: "power2.out" }, 0);
+      tl.fromTo(["#d1", "#d2", "#d3", "#d4", "#d5", "#d6"], { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, stagger: 0.12, ease: "power2.out" }, 0.1);
+      tl.to(["#d1", "#d3", "#d5"], { y: -26, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.4);
+      tl.to(["#d2", "#d4", "#d6"], { y: 24, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.4);
+      tl.fromTo("#hook1", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.2);
+      tl.fromTo("#hook2", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.9);
+      tl.to("#s1-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 3.1);
+
+      /* Scene 2 — reveal */
+      tl.fromTo("#s2-inner", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 3.5);
+      tl.fromTo("#s2badge", { y: -22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 3.7);
+      tl.fromTo("#s2t1", { y: 54, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, 3.82);
+      tl.fromTo("#s2t2", { y: 54, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, 4.05);
+      tl.fromTo("#s2sub", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 4.6);
+      tl.fromTo("#s2line", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.inOut" }, 4.7);
+      tl.to("#s2-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 6.6);
+
+      /* Scene 3 — leaderboard */
+      tl.fromTo("#s3-inner", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 7.0);
+      tl.fromTo("#s3eyebrow", { y: -18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 7.2);
+      // beat-grid: rows grow on the pulse
+      tl.fromTo(["#r1", "#r2", "#r3", "#r4", "#r5"], { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.18, ease: "power2.out" }, 7.64);
+      tl.fromTo(["#f1", "#f2", "#f3", "#f4"], { scaleX: 0 }, { scaleX: 1, duration: 0.55, stagger: 0.18, ease: "power3.out" }, 7.7);
+      // beat-locked: the winner's bar lands on strong cue 8.74s
+      tl.fromTo("#f5", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 8.74);
+      tl.to("#s3-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 10.1);
+
+      /* Scene 4 — KNN hero */
+      tl.fromTo("#s4-inner", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 10.5);
+      tl.fromTo("#s4eyebrow", { y: -18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 10.7);
+      const statProxy = { v: 0 };
+      const numEl = document.getElementById("num");
+      // beat-locked: stat settles toward strong cue 10.93s
+      tl.to(statProxy, { v: 93, duration: 0.75, ease: "power2.out", onUpdate: () => { numEl.textContent = Math.round(statProxy.v); } }, 10.93);
+      tl.fromTo("#num", { y: 30 }, { y: 0, duration: 0.7, ease: "power3.out" }, 10.93);
+      tl.fromTo("#s4label", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 11.5);
+      tl.fromTo("#s4sub", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 12.0);
+      tl.to("#s4-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 13.6);
+
+      /* Scene 5 — scatter */
+      tl.fromTo("#s5-inner", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 14.0);
+      tl.fromTo("#s5eyebrow", { y: -18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 14.2);
+      tl.fromTo("#card", { scale: 0.95 }, { scale: 1, duration: 0.6, ease: "power3.out" }, 14.73);
+      tl.fromTo("#pts-grey circle", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, stagger: 0.03, ease: "back.out(1.6)", transformOrigin: "center" }, 15.29);
+      tl.fromTo("#pts-blue circle", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, stagger: 0.03, ease: "back.out(1.6)", transformOrigin: "center" }, 15.55);
+      tl.fromTo("#boundary", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 16.0);
+      tl.fromTo("#s5cap", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 16.5);
+      tl.to("#s5-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 17.0);
+
+      /* Scene 6 — outro */
+      tl.fromTo("#s6-inner", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 17.4);
+      tl.fromTo("#s6t1", { scale: 1.18, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 17.47);
+      tl.fromTo("#s6t2", { scale: 1.18, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 17.62);
+      tl.fromTo("#s6tag", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 18.3);
+      tl.fromTo("#s6line", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.inOut" }, 18.56);
+      tl.to("#music", { volume: 0, duration: 1.1, ease: "power2.in" }, 19.4);
+      tl.to("#s6-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 20.1);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
